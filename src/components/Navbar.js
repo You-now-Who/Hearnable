@@ -20,8 +20,8 @@ export const Navbar = () => {
                     </div>                
                 </div>
                 
-                <Link type="button" class="btn btn-primary mx-1" to="/login">Login</Link>
-                <Link type="button" class="btn btn-secondary mx-1" to="/signup" >Signup</Link>
+                <Link type="button" className="btn btn-primary mx-1" to="/login">Login</Link>
+                <Link type="button" className="btn btn-secondary mx-1" to="/signup" >Signup</Link>
 
             </div>
         </nav>

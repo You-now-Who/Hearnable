@@ -17,16 +17,20 @@ function App() {
 
       <Router>
         
-        <Navbar/>    
+        <Navbar/>   
 
-        <Routes>
+        <div className="container my-3">
 
-          <Route exact path = "/" element = {<Home/>} />
-          <Route exact path = "/about" element = {<About/>} />
-          <Route exact path = "/login" element = {<Login/>} />
-          <Route exact path = "/signup" element = {<Signup/>} />
-          
-        </Routes>
+          <Routes>
+
+            <Route exact path = "/" element = {<Home/>} />
+            <Route exact path = "/about" element = {<About/>} />
+            <Route exact path = "/login" element = {<Login/>} />
+            <Route exact path = "/signup" element = {<Signup/>} />
+            
+          </Routes>
+
+        </div> 
 
       </Router>
   
