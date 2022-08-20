@@ -16,9 +16,10 @@ router.post('/createuser', [
     body('password').isLength({ min: 5 }).withMessage('Invalid password. Password must be at least 5 characters long')
 
 ], async (req, res) => {
+    let success = false;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({success, errors: errors.array() });
     }   
 
     try{
@@ -26,7 +27,7 @@ router.post('/createuser', [
         // Check if email exists
         let user = await User.findOne({ email: req.body.email });
         if (user) {
-            return res.status(400).json({ msg: 'User with this email already exists' });
+            return res.status(400).json({success, msg: 'User with this email already exists' });
         }
         // If email doesnt exist, create new user 
 
@@ -46,7 +47,8 @@ router.post('/createuser', [
         const authToken =  jwt.sign(data, JWT_SECRET);
         
         // res.json(user);
-        res.json({authToken})
+        success = true;
+        res.json({success, authToken})
 
     }
     catch(err){
