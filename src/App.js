@@ -11,6 +11,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import { useState } from 'react';
 import Alert from './components/Alert';
+import MicDemo from './components/MicDemo';
 
 
 function App() {
@@ -27,28 +28,37 @@ function App() {
 }
   return (
     <>
-
       <Router>
-        
-        <Navbar/>   
+        <Navbar />
 
-        <Alert alert={alert}/>
+        <Alert alert={alert} />
 
         <div className="container my-3">
-
           <Routes>
-
-            <Route exact path = "/" element = {<Home showAlert={showAlert}/>} />
-            <Route exact path = "/about" element = {<About />} />
-            <Route exact path = "/login" element = {<Login showAlert={showAlert} />} />
-            <Route exact path = "/signup" element = {<Signup showAlert={showAlert} />} />
-            
+            <Route
+              exact
+              path="/"
+              element={
+                <div>
+                  <MicDemo /> 
+                  <Home showAlert={showAlert} />{" "}
+                </div>
+              }
+            />
+            <Route exact path="/about" element={<About />} />
+            <Route
+              exact
+              path="/login"
+              element={<Login showAlert={showAlert} />}
+            />
+            <Route
+              exact
+              path="/signup"
+              element={<Signup showAlert={showAlert} />}
+            />
           </Routes>
-
-        </div> 
-
+        </div>
       </Router>
-  
     </>
   );
 }
