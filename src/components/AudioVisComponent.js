@@ -1,58 +1,63 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ReactMic } from "react-mic";
 import WaveSurfer from "wavesurfer.js";
-import { Flex, Button } from "@chakar-ui/react";
+// import { Flex, Button } from "@chakar-ui/react";
 
 
-
+let xhr = { cache: 'default', mode: 'no-cors', method: 'GET', credentials: 'same-origin', redirect: 'follow', referrer: 'client'};
 export default function Microphone({ pushFile }) {
   const [record, setRecord] = useState(false);
+  
   const [open, setOpen] = React.useState(false);
   const [tempFile, setTempFile] = React.useState(null);
 
   const [playerReady, setPlayerReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const wavesurfer = useRef(null);
-
-
-  const waveform = useRef(null);
-
-
   useEffect(() => {
-    if (!open || (open && !tempFile)) return;
-
-    if(!waveform.current){
+        if (wavesurfer.current != null) return;
+        console.log("reached useEffect");
         wavesurfer.current = WaveSurfer.create({
-        container: "#wavesurfer-id",
-        waveColor: "grey",
-        progressColor: "tomato",
-        height: 140,
-        cursorWidth: 1,
-        cursorColor: "lightgrey",
-        barWidth: 2,
-        normalize: true,
-        responsive: true
+            container: "#waveform",
+            waveColor: "grey",
+            progressColor: "tomato",
+            height: 140,
+            cursorWidth: 1,
+            cursorColor: "lightgrey",
+            barWidth: 2,
+            normalize: true,
+            fillParent: true,
+            xhr: xhr,
+            responsive: true
+            });
+        wavesurfer.current.load("https://soundcloud.com/ma-suwa/sweet-ballistic-missile?si=68f87de733e74130a03469f4811acbf7&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing");
+        console.log("Loaded successfully", wavesurfer);
+
+        
+        wavesurfer.current.on("ready", () => {
+        setPlayerReady(true);
         });
-    }
 
-    wavesurfer.current.on("ready", () => {
-      setPlayerReady(true);
-    });
+        const handleResize = wavesurfer.current.util.debounce(() => {
+        wavesurfer.current.empty();
+        wavesurfer.current.drawBuffer();
+        }, 150);
 
-    const handleResize = wavesurfer.current.util.debounce(() => {
-      wavesurfer.current.empty();
-      wavesurfer.current.drawBuffer();
-    }, 150);
+        wavesurfer.current.on("play", () => setIsPlaying(true));
+        wavesurfer.current.on("pause", () => setIsPlaying(false));
+        window.addEventListener("resize", handleResize, false);
+        }, [open, tempFile]);
 
-    wavesurfer.current.on("play", () => setIsPlaying(true));
-    wavesurfer.current.on("pause", () => setIsPlaying(false));
-    window.addEventListener("resize", handleResize, false);
-  }, [open, tempFile]);
+
+
 
   useEffect(() => {
     console.log("tempFile", tempFile);
-    if (tempFile) {
-      wavesurfer.current.load(tempFile.blobURL);
+    if (tempFile != null ) {
+        console.log("tempFile", tempFile.blobURL);
+        console.log("wavesurfer", wavesurfer);
+        wavesurfer.current.load(tempFile);
+        wavesurfer.current.load(tempFile.blobURL);
     }
   }, [tempFile]);
 
@@ -94,40 +99,78 @@ export default function Microphone({ pushFile }) {
   };
 
   const onData = recordedBlob => {
-    //console.log("chunk of real-time data is: ", recordedBlob);
+    console.log("chunk of real-time data is: ", recordedBlob);
   };
 
   const onStop = recordedBlob => {
     setTempFile(recordedBlob);
+    console.log("recordedBlob was stopped: ", recordedBlob);
   };
   
   const playAudio = () => {
-    if (waveform.current.isPlaying()) {
-      waveform.current.pause();
+    if (wavesurfer.current.isPlaying()) {
+      wavesurfer.current.pause();
     } else {
-      waveform.current.play();
+      wavesurfer.current.play();
     }
   };
 //   const classes = useStyles();
 
   return (
     <>
-        <ReactMic
-            record={record}
-            className="react-mic"
-            onStop={onStop}
-            onData={onData}
-            strokeColor="grey"
-            backgroundColor="white"
-        />
-         <Flex flexDirection="column" w="100%">
-            <div id="waveform" />
-            <Flex flexDirection="row" justifyContent="center">
-                <Button m="4" onClick={playAudio}>
+        {console.log("record: ", record) }
+        
+        {/* {record ? (
+        <div className="text-center">
+            <ReactMic
+                record={record}
+                className="react-mic"
+                onStop={onStop}
+                onData={onData}
+                strokeColor="grey"
+                backgroundColor="white"
+            />
+        </div>) : (
+            <p></p>
+        )} */}
+
+        <div>
+            <h3 className="display-10">Record:</h3>
+            <div className="text-center">
+                <ReactMic
+                    record={record}
+                    className="react-mic"
+                    onStop={onStop}
+                    onData={onData}
+                    strokeColor="grey"
+                    backgroundColor="white"
+                />
+            </div>
+        </div>
+        
+
+        <div>
+            <h3 className="display-10">Playback:</h3>
+            <div className="my-2" id="waveform"></div>
+        </div>
+
+        <p>Volume: {wavesurfer.current.getVolume()}</p>
+        
+           
+        <div className="text-center my-2" width="100%">
+            
+            <div >
+                <button className="btn btn-danger mx-2" m="4" onClick={playAudio}>
                 Play / Pause
-                </Button>
-            </Flex>
-        </Flex>
+                </button>
+                <button className="btn btn-primary mx-2" m="4" onClick={startRecording}>
+                    Record
+                </button>
+                <button className="btn btn-primary mx-2" m="4" onClick={stopRecording}>
+                    Stop Recording
+                </button>
+            </div>
+        </div>
     </>
   );
 }
