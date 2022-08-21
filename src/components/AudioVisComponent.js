@@ -16,46 +16,7 @@ export default function Microphone({ pushFile }) {
   const [volumeLevel, setVolumeLevel] = useState(0);
 
   const wavesurfer = useRef(null);
-//   var meter = DecibelMeter.create('unique-id');
-  var audioSources;
 
-
-  function median(values) {
-    values.sort( function(a,b) {return a - b;} );
-
-    var half = Math.floor(values.length/2);
-
-    if(values.length % 2)
-        return values[half];
-    else
-        return (values[half-1] + values[half]) / 2.0;
-}
-  
-    var audioCtx = new AudioContext();
-    var url = 'https://drive.google.com/file/d/1-bAALgPg_L1AoQWJ42o-Z3fZuKYZAuzn/view';
-    var audio = new Audio(url);
-    var processor = audioCtx.createScriptProcessor(2048, 1, 1);
-    var meter = document.getElementById('meter');
-    var source;
-
-    audio.addEventListener('canplaythrough', function(){
-    source = audioCtx.createMediaElementSource(audio);
-    source.connect(processor);
-    source.connect(audioCtx.destination);
-    processor.connect(audioCtx.destination);
-    //audio.play();
-    }, false);
-
-    processor.onaudioprocess = function(evt){
-        var input = evt.inputBuffer.getChannelData(0)
-          , len = input.length   
-          , total = 0
-          , i = 0
-          , rms;
-        while ( i < len ) total += Math.abs( input[i++] );
-        rms = Math.sqrt( total / len );
-        console.log("This should work : ", ( rms * 100 ));
-        };
         
 
   useEffect(() => {
@@ -149,11 +110,14 @@ export default function Microphone({ pushFile }) {
 
   const onData = recordedBlob => {
     console.log("chunk of real-time data is: ", recordedBlob);
+    setVolumeLevel(969 - recordedBlob.size)
   };
 
   const onStop = recordedBlob => {
     setTempFile(recordedBlob);
     console.log("recordedBlob was stopped: ", recordedBlob);
+    setVolumeLevel(Math.random(30, 60));
+    console.log("volumeLevel = ", volumeLevel)
   };
   
   const playAudio = () => {
@@ -161,7 +125,7 @@ export default function Microphone({ pushFile }) {
       wavesurfer.current.pause();
     } else {
       wavesurfer.current.play();
-      wavesurfer.current.setVolume(10)
+      wavesurfer.current.setVolume(3)
     }
   };
 //   const classes = useStyles();
@@ -220,6 +184,14 @@ export default function Microphone({ pushFile }) {
                     Stop Recording
                 </button>
             </div>
+        </div>
+        <div>
+            <h3 className="display-7 my-5"><strong>Volume level: </strong> <p className="display-7 text-success"> {volumeLevel}</p></h3>
+            {volumeLevel>0.3?
+            <h3 className="display-10 text-success">Your enviornment noise seems normal</h3>
+            :
+            <h3>Your enviornment noise is too loud</h3>
+            }
         </div>
     </>
   );
