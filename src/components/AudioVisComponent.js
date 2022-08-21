@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ReactMic } from "react-mic";
 import WaveSurfer from "wavesurfer.js";
-// import { Flex, Button } from "@chakar-ui/react";
+import { DecibelMeter } from 'decibel-meter'
 
 
 let xhr = { cache: 'default', mode: 'no-cors', method: 'GET', credentials: 'same-origin', redirect: 'follow', referrer: 'client'};
@@ -16,18 +16,47 @@ export default function Microphone({ pushFile }) {
   const [volumeLevel, setVolumeLevel] = useState(0);
 
   const wavesurfer = useRef(null);
-  
-//   var audio = new Audio();
-//   try {
-//     const context = new AudioContext();
-//     }
-//     catch(e) {
-//     alert('Web Audio API is not supported in this browser');
-//     }
+//   var meter = DecibelMeter.create('unique-id');
+  var audioSources;
 
-//     var processor = context.createScriptProcessor(2048, 1, 1);
-//     var source;
-    
+
+  function median(values) {
+    values.sort( function(a,b) {return a - b;} );
+
+    var half = Math.floor(values.length/2);
+
+    if(values.length % 2)
+        return values[half];
+    else
+        return (values[half-1] + values[half]) / 2.0;
+}
+  
+    var audioCtx = new AudioContext();
+    var url = 'https://drive.google.com/file/d/1-bAALgPg_L1AoQWJ42o-Z3fZuKYZAuzn/view';
+    var audio = new Audio(url);
+    var processor = audioCtx.createScriptProcessor(2048, 1, 1);
+    var meter = document.getElementById('meter');
+    var source;
+
+    audio.addEventListener('canplaythrough', function(){
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(processor);
+    source.connect(audioCtx.destination);
+    processor.connect(audioCtx.destination);
+    //audio.play();
+    }, false);
+
+    processor.onaudioprocess = function(evt){
+        var input = evt.inputBuffer.getChannelData(0)
+          , len = input.length   
+          , total = 0
+          , i = 0
+          , rms;
+        while ( i < len ) total += Math.abs( input[i++] );
+        rms = Math.sqrt( total / len );
+        console.log("This should work : ", ( rms * 100 ));
+        };
+        
 
   useEffect(() => {
         if (wavesurfer.current != null) return;
@@ -82,6 +111,9 @@ export default function Microphone({ pushFile }) {
     } else {
       wavesurfer.current.pause();
     }
+    // meter.on('ready', function (meter, sources) {
+    //     audioSources = sources;
+    //     });
   };
   const stopPlayback = () => wavesurfer.current.stop();
 
@@ -107,6 +139,8 @@ export default function Microphone({ pushFile }) {
   const startRecording = () => {
     setTempFile(null);
     setRecord(true);
+    
+    // median(audioSources);
   };
 
   const stopRecording = () => {
@@ -127,6 +161,7 @@ export default function Microphone({ pushFile }) {
       wavesurfer.current.pause();
     } else {
       wavesurfer.current.play();
+      wavesurfer.current.setVolume(10)
     }
   };
 //   const classes = useStyles();

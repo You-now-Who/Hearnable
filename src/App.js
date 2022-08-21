@@ -47,7 +47,7 @@ function App() {
                 </div>
               }
             />
-            <Route exact path="/about" element={<About />} />
+            <Route exact path="/details" element={<About />} />
             <Route
               exact
               path="/login"
