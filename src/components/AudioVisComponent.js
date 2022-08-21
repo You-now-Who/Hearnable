@@ -13,7 +13,22 @@ export default function Microphone({ pushFile }) {
 
   const [playerReady, setPlayerReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volumeLevel, setVolumeLevel] = useState(0);
+
   const wavesurfer = useRef(null);
+  
+//   var audio = new Audio();
+//   try {
+//     const context = new AudioContext();
+//     }
+//     catch(e) {
+//     alert('Web Audio API is not supported in this browser');
+//     }
+
+//     var processor = context.createScriptProcessor(2048, 1, 1);
+//     var source;
+    
+
   useEffect(() => {
         if (wavesurfer.current != null) return;
         console.log("reached useEffect");
@@ -154,7 +169,7 @@ export default function Microphone({ pushFile }) {
             <div className="my-2" id="waveform"></div>
         </div>
 
-        <p>Volume: {wavesurfer.current.getVolume()}</p>
+        {/* <p>Volume: {wavesurfer.current.getVolume()}</p> */}
         
            
         <div className="text-center my-2" width="100%">
