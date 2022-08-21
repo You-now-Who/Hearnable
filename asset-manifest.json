@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.abd64e84.css",
-    "main.js": "/static/js/main.97b34053.js",
-    "index.html": "/index.html",
-    "main.abd64e84.css.map": "/static/css/main.abd64e84.css.map",
-    "main.97b34053.js.map": "/static/js/main.97b34053.js.map"
+    "main.css": "/Hearnable/static/css/main.abd64e84.css",
+    "main.js": "/Hearnable/static/js/main.97b34053.js",
+    "index.html": "/Hearnable/index.html",
+    "main.abd64e84.css.map": "/Hearnable/static/css/main.abd64e84.css.map",
+    "main.97b34053.js.map": "/Hearnable/static/js/main.97b34053.js.map"
   },
   "entrypoints": [
     "static/css/main.abd64e84.css",
